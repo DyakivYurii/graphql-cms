@@ -1,54 +1,82 @@
-import { GraphQLServer } from 'graphql-yoga';
+import { GraphQLServer } from 'graphql-yoga'
 
-// Type definitions (schema)
-// This is applicatiion schema
+import { fakePosts, fakeUsers, fakeComments } from './fakeData';
+
 const typeDefs = `
   type Query {
-    me: User!
+    posts(id: ID!): [Post!]!
+    users: [User!]!
+    user(id: ID!): User!
+  } 
+
+  type Post {
+    id: ID!
+    title: String!
+    comments: [Comment!]!
+    author: User!
   }
 
   type User {
-    id: ID!,
+    id: ID!
     name: String!
     email: String!
     age: Int
-    post: Post!
   }
 
-  type Post {
-    id: ID!,
-    title: String!
+  type Comment {
+    id: ID!
+    user: User!
     text: String!
   }
-`
+`;
 
-// Resolvers
-// funcitons - for different query, that know what to return
-// when we run in
 const resolvers = {
   Query: {
-    me() {
-      return {
-        id: `324351`,
-        name: 'Yurii',
-        email: 'yurii@gmail.com',
-        post: {
-          id: `78142`,
-          title: `First title to post`,
-          text: `This is text for post`
-        }
+    posts(parent, args, ctx, info) {
+      if(args.id) {
+        return fakePosts.filter((post) => {
+          return post.id === args.id;
+        });
       }
+      return fakePosts;
+    },
+    users(parent, args, ctx, info) {
+      return fakeUsers;
+    },
+    user(parent, args, ctx, info) {
+      if(args.id) {
+        return fakeUsers.find((user) => { 
+          return user.id === args.id;
+        });
+      }
+      return null;
     }
-  }
-}
+  },
+  Post: {
 
-// new instance of GraphQLserver
+  },
+  User: {
+    id(parent, args, ctx, info) {
+      return parent.id;
+    },
+    name(parent, args, ctx, info) {
+      return parent.name;
+    },
+    email(parent, args, ctx, info) {
+      return args.email;
+    },
+    age(parent, args, ctx, info) {
+      return args.age;
+    }
+  },
+  Comment: {}
+};
+
 const server = new GraphQLServer({
-  typeDefs: typeDefs,
-  resolvers: resolvers
+  typeDefs,
+  resolvers
 });
 
-// start server
 server.start(() => {
-  console.log(`Server started`);
+  console.log(`Server was started at http://localhost:4000`);
 })
