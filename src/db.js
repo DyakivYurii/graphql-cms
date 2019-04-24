@@ -71,4 +71,10 @@ const fakeComments = [
   }
 ];
 
-export { fakePosts, fakeUsers, fakeComments };
+const db = {
+  fakePosts,
+  fakeUsers,
+  fakeComments
+}
+
+export default db;
