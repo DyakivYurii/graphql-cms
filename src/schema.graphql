@@ -10,6 +10,11 @@ type Mutation {
   deleteUser(id: ID!): User!
 }
 
+type Subscription {
+  count: Int!
+  user(id: ID!): UserSubscriptionPayload!
+}
+
 input CreateUserInput {
   name: String!
   email: String!
@@ -40,4 +45,15 @@ type Comment {
   id: ID!
   user: User!
   text: String!
+}
+
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
+type UserSubscriptionPayload {
+  mutation: MutationType!
+  data: User!
 }

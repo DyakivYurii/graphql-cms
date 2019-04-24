@@ -1,7 +1,7 @@
 import uuidv4 from 'uuid/v4';
 
 const Mutation = {
-  createUser(parent, args, { db }, info) {
+  createUser(parent, args, { db, pubsub }, info) {
     // Check does some user from a list have identical email
     const emailTaken = db.fakeUsers.some((user) => {
       return user.email === args.data.email;
@@ -19,6 +19,7 @@ const Mutation = {
     }
 
     db.fakeUsers.push(user);
+    pubsub.publish(`user ${user.id}`, { user: { mutation: "CREATED", data: user } });
 
     return user;
   },
